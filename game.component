@@ -1,0 +1,61 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-game',
+  templateUrl: './game.component.html',
+  styleUrls: ['./game.component.css']
+})
+export class GameComponent {
+  board: string[][];
+  currentPlayer: string;
+  winner: string | null;
+
+  constructor() {
+    this.initializeGame();
+  }
+
+  initializeGame() {
+    this.board = [['', '', ''], ['', '', ''], ['', '', '']];
+    this.currentPlayer = 'X';
+    this.winner = null;
+  }
+
+  makeMove(row: number, col: number) {
+    if (this.board[row][col] === '' && this.winner === null) {
+      this.board[row][col] = this.currentPlayer;
+      this.checkWinner();
+      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+    }
+  }
+
+  checkWinner() {
+    const winningCombinations = [
+      [[0, 0], [0, 1], [0, 2]],
+      [[1, 0], [1, 1], [1, 2]],
+      [[2, 0], [2, 1], [2, 2]],
+      [[0, 0], [1, 0], [2, 0]],
+      [[0, 1], [1, 1], [2, 1]],
+      [[0, 2], [1, 2], [2, 2]],
+      [[0, 0], [1, 1], [2, 2]],
+      [[0, 2], [1, 1], [2, 0]],
+    ];
+
+    for (const combination of winningCombinations) {
+      const [a, b, c] = combination;
+      if (this.board[a[0]][a[1]] && 
+          this.board[a[0]][a[1]] === this.board[b[0]][b[1]] &&
+          this.board[a[0]][a[1]] === this.board[c[0]][c[1]]) {
+        this.winner = this.board[a[0]][a[1]];
+        return;
+      }
+    }
+    
+    if (this.board.flat().every(cell => cell)) {
+      this.winner = 'Draw';
+    }
+  }
+
+  resetGame() {
+    this.initializeGame();
+  }
+}
